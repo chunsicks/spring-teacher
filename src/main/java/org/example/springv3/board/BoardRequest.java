@@ -18,11 +18,9 @@ public class BoardRequest {
                     .title(title)
                     .content(content)
                     .user(sessionUser)
-
                     .build(); // shift + enter
         }
     }
-
 
     @Data
     public static class UpdateDTO {

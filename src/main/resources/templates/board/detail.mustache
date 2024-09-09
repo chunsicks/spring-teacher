@@ -13,7 +13,7 @@
     {{/model.isOwner}}
 
     <div class="d-flex justify-content-end">
-            <b>작성자</b> : {{model.user.username}}
+        <b>작성자</b> : {{model.username}}
     </div>
 
     <!-- 게시글내용 -->
@@ -24,6 +24,108 @@
             {{{model.content}}}
         </div>
     </div>
+    <!-- 댓글 -->
+    <div class="card mt-3">
+        <!-- 댓글등록 -->
+        <div class="card-body">
+            <form>
+                <input type="hidden" value="{{model.id}}" id="boardId">
+                <textarea class="form-control" rows="2" id="comment"></textarea>
+                <div class="d-flex justify-content-end">
+                    <button onclick="saveReply()" type="button" class="btn btn-outline-primary mt-1">댓글등록</button>
+                </div>
+            </form>
+        </div>
+        <!-- 댓글목록 -->
+        <div class="card-footer">
+            <b>댓글리스트</b>
+        </div>
+        <div class="list-group" id="reply-box">
+            {{#model.replies}}
+                <!-- 댓글아이템 -->
+                <div id="reply-{{id}}" class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex">
+                        <div class="px-1 me-1 bg-primary text-white rounded">{{username}}</div>
+                        <div>{{comment}}</div>
+                    </div>
+                    {{#isOwner}}
+                        <form>
+                            <button onclick="deleteReply('{{id}}')" type="button" class="btn">🗑</button>
+                        </form>
+                    {{/isOwner}}
+                </div>
+            {{/model.replies}}
+        </div>
+    </div>
 </div>
+<script>
+    //리로드 안 하려고
+    function replyItem(reply) {
+        return ` <div id="reply-${reply.id}" class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex">
+                        <div class="px-1 me-1 bg-primary text-white rounded">${reply.username}</div>
+                        <div>${reply.comment}</div>
+                    </div>
+                        <form>
+                            <button onclick="deleteReply('${reply.id}')" type="button" class="btn">🗑</button>
+                        </form>
+                </div>`;
+    }
+    //어팬드? 프리팬드???  찾아보자
+
+    async function saveReply() {
+        //1. Reply 객체 만들기(ID로 찾아서)
+        //이거 그대로 전송 못해서 json으로 변경해서 보내야함
+        let reply = {
+            comment: $("#comment").val(),
+            boardId: $("#boardId").val()
+        };
+
+        //2. fetch 요청하기  메서드, 어떤 마임타입가지고 있는지(컨탠트 타입)   get은 where절에 걸려고 쓰니까 쿼리 스트링이다
+        let response = await fetch(`/api/reply`, {
+            method: "post",
+            body: JSON.stringify(reply),
+            headers: {
+                "Content-Type": "application/json; charset=utf-8"
+            }
+        });
+        //파싱
+        let responseBody = await response.json(); // DTO!!
+        console.log(responseBody);
+
+        //3.CSR 하기
+        //이거는 전체 리로드
+        //location.reload();
+        //왜 바디인가? 리스펀스 바디 . 바디에 들어가 있기 때문에!!
+        $("#reply-box").prepend(replyItem(responseBody.body));
+        //공백 넣으려고
+        $("textarea").val("");
+    }
+
+    async function deleteReply(id) {
+        //1. header + body
+        let response = await fetch(`/api/reply/${id}`, {
+            method: "delete"
+        });
+        // console.log(response);
+
+        //2. body(parsing)
+        let responseBody = await response.json();//파싱
+        //  console.log(responseBody);
+        if (response.ok) {
+            $(`#reply-${id}`).remove();
+            //location.reload();  f5 때리는거
+            /*
+            f5때리면 fetch 안보임 새로고침 전의 것이기에 이럴꺼면 form쓰지
+            즉 다시 다 다운받는 거임   다시 다 다운받는게 아닌 캐싱하는게 맞다! css js 이런것 정적대이터는 변하지 않는다.
+            내가 캐싱하고있는건가? 공부해야한다!
+
+            나중에 이런 데이터들은 어떻게 사용하냐면 스프링 서버
+             */
+        } else {
+            alert(responseBody.msg);
+        }
+    }
+</script>
 
 {{>layout/footer}}
