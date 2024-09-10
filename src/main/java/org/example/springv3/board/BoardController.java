@@ -27,11 +27,21 @@ public class BoardController {
     private final HttpSession session;
     private final BoardService boardService;
 
+    // 보드 데이터만 받아오는 데이터 return board/list하면 안됨 responseEntity 받아야함   원래는 boardDTO를 받아야함
+    //가방에 담을 필요 없음 담았다가 뿌리는게 아니니까
+    //세션없고 board에 있는것 getter때림 json이니까 근데 getUser할 때 no Session뜰거다!  user안에는 담는 데이터가 없고 이미 세션 끝나고 끝남
+    //그래서 boardDTO로 바꿔야 한다!!
+    @GetMapping("/board")
+    public ResponseEntity<?> boardList(@RequestParam(value = "title", required = false) String title) {
+        List<BoardResponse.DTO> boardList = boardService.게시글목록보기(title);
+        return ResponseEntity.ok(Resp.ok(boardList));
+    }
+
     //localhost:8080?title=제목 이러면?   requestParam 생략 가능
     // 이유는 적어주면 requestParam에서(defaultValue ="", name="title") 이렇게 쓸 수 있다 쿼리 안에 title이 없으면 터지는데 (파싱 못하니까) 그래서 공백으로 넣어라 할 수 있다.!
     @GetMapping("/")
     public String list(@RequestParam(value = "title", required = false) String title, HttpServletRequest request) {
-        List<Board> boardList = boardService.게시글목록보기(title);
+        List<BoardResponse.DTO> boardList = boardService.게시글목록보기(title);
         request.setAttribute("models", boardList);
         return "board/list";
     }

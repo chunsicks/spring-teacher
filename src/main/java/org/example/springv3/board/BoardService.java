@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,19 +24,29 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardQueryRepository boardQueryRepository;
 
-    public List<Board> 게시글목록보기(String title) {
+    public List<BoardResponse.DTO> 게시글목록보기(String title) {
+
+        List<BoardResponse.DTO> dtos = new ArrayList<>();
+        List<Board> boardList = null;
         //전체 결과
         if(title == null){
             //Pageable pg = PageRequest.of(0, 3, Sort.Direction.DESC, "id");
             // 게시글 순서 거꾸로 만드려고
             Sort sort = Sort.by(Sort.Direction.DESC, "id");
-            List<Board> boardList = boardRepository.findAll(sort);
-            return boardList;
+             boardList = boardRepository.findAll(sort);
+
             // 검색된 결과
         }else {
-            List<Board> boardList = boardRepository.mFindAll(title);
-            return boardList;
+            boardList = boardRepository.mFindAll(title);
         }
+        //엔티티를 dto로 이동
+        for(Board board : boardList){
+            BoardResponse.DTO dto = new BoardResponse.DTO(board);
+            dtos.add(dto);
+        }
+        return dtos;
+
+//        return boardList.stream().map(BaordResponse.DTO::new).toList();
     }
 
 
