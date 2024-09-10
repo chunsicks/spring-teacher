@@ -14,11 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +27,11 @@ public class BoardController {
     private final HttpSession session;
     private final BoardService boardService;
 
+    //localhost:8080?title=제목 이러면?   requestParam 생략 가능
+    // 이유는 적어주면 requestParam에서(defaultValue ="", name="title") 이렇게 쓸 수 있다 쿼리 안에 title이 없으면 터지는데 (파싱 못하니까) 그래서 공백으로 넣어라 할 수 있다.!
     @GetMapping("/")
-    public String list(HttpServletRequest request) {
-        List<Board> boardList = boardService.게시글목록보기();
+    public String list(@RequestParam(value = "title", required = false) String title, HttpServletRequest request) {
+        List<Board> boardList = boardService.게시글목록보기(title);
         request.setAttribute("models", boardList);
         return "board/list";
     }
@@ -157,9 +156,9 @@ public class BoardController {
     }
 
     @PostMapping("/text/form")
-    public String form(){
-        return "user/join-form";
-
+    public @ResponseBody String form(){
+        return "ok";
+        //return "user/join-form";
     }
     // return "user/join-form";
 }

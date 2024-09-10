@@ -23,12 +23,19 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardQueryRepository boardQueryRepository;
 
-    public List<Board> 게시글목록보기() {
-        //Pageable pg = PageRequest.of(0, 3, Sort.Direction.DESC, "id");
-        // 게시글 순서 거꾸로 만드려고
-        Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        List<Board> boardList = boardRepository.findAll(sort);
-        return boardList;
+    public List<Board> 게시글목록보기(String title) {
+        //전체 결과
+        if(title == null){
+            //Pageable pg = PageRequest.of(0, 3, Sort.Direction.DESC, "id");
+            // 게시글 순서 거꾸로 만드려고
+            Sort sort = Sort.by(Sort.Direction.DESC, "id");
+            List<Board> boardList = boardRepository.findAll(sort);
+            return boardList;
+            // 검색된 결과
+        }else {
+            List<Board> boardList = boardRepository.mFindAll(title);
+            return boardList;
+        }
     }
 
 
@@ -100,7 +107,7 @@ public class BoardService {
 
     }
 
-    
+
     public BoardResponse.DetailDTO 게시글상세보기(User sessionUser, Integer boardId){
         Board boardPS = boardRepository.mFindByIdWithReply(boardId)
                 .orElseThrow(() -> new Exception404("게시글이 없습니다."));
@@ -112,4 +119,6 @@ public class BoardService {
                 .orElseThrow(() -> new Exception404("게시글이 없습니다."));
         return boardPS;
     }
+
+
 }
