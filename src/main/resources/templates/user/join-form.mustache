@@ -8,9 +8,10 @@
     <div class="card">
         <div class="card-header"><b>회원가입을 해주세요</b></div>
         <div class="card-body">
-            <form action="/join" method="post" enctype="application/x-www-form-urlencoded">
+            <form action="/join" method="post" enctype="application/x-www-form-urlencoded" onsubmit="return valid()">
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Enter username" name="username" value="haha">
+                    <input type="text" class="form-control" placeholder="Enter username" name="username" id="username" value="haha">
+                    <button onclick="sameCheck()" type="button" class="btn btn-outline-primary">중복체크</button>
                 </div>
                 <div class="mb-3">
                     <input type="password" class="form-control" placeholder="Enter password" name="password"
@@ -25,5 +26,42 @@
         </div>
     </div>
 </div>
+<script>
+    //1. bool 타입은 is를 붙여서 만든다! 컨벤션이다
+    //그래야 if해서 보기 편하다
+    //최초에 바로 실행되고 f5누르면 초기화 브라우저 페이지 마다 가지고 있는 것!
+    let isSameUsername = true;
+
+    async function sameCheck(){
+        //id로 찾자!
+        //1. username 가져오기
+        let username = $("#username").val();
+        //2. fetch로 통신하기(url 모름, 메서드에서 가지고 와야한다!  get요청,   select요청은 무조건 get!!
+        //프론트 앤드한테는 컨트롤러 보여주는 문서가 필요하다
+        let response = await fetch(`/user/samecheck?username=${username}`);
+        let responseBody = await  response.json();
+
+        //3. 중복됐으면 -> isSameUser = true 원래 true인데 왜 true로 바꿔요?  트리거 해줘야함
+        //4. 중복 안 됐으면 -> isSameUser = flase; -> username자리 input을 readOnly로 바꿔야 함 중복체크 했으면 바꿀 수 없게!
+        if(responseBody.body){
+            isSameUsername = true;
+            alert("중복된 유저네임이에요");
+        }else {
+            isSameUsername = false;
+            alert("사용가능한 아이디 입니다");
+            //속성주기!
+            $("#username").attr("readOnly", true);
+        }
+    }
+
+    function valid(){
+        if(isSameUsername){
+            alert("중복체크가 필요합니다")
+            return false;
+        }else{
+            return true;
+        }
+    }
+</script>
 
 {{> layout/footer}}

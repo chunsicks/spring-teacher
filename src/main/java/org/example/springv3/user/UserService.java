@@ -33,4 +33,14 @@ public class UserService {
         userRepository.save(joinDTO.toEntity());
 
     }
+
+    public boolean 유저네임중복되었니(String username) {
+        Optional<User> userOP = userRepository.findByUsername(username);
+        //optional안에 있는 것 꺼내기
+        if(userOP.isPresent()) {
+            return true;
+        }else {
+            return false;
+        }
+    }
 }

@@ -3,17 +3,29 @@ package org.example.springv3.user;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.springv3.core.util.Resp;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @Controller
 public class UserController {
     private final HttpSession session;
     private final UserService userService;
+
+    //http://localhost:8080/user/samecheck?username=hello   이렇게 요청들어옴    xwwwform도 쿼리스트링 받을 수 있다!
+    //서비스로 부터 불리언을 받을 거다 중복체크일 때 true가 중복체크됐는지 flase가 중복체크 됐는지 정해야함 짜기 나름이다 꼭 정해야 한다!  유저네임중복체크 이래하면 헷갈림
+    //유저네임중복되었니 이렇게 명확해야 한다!
+    @GetMapping("/user/samecheck")
+    public ResponseEntity<?> sameCheck(@RequestParam("username") String username) {
+        boolean isSameUsername = userService.유저네임중복되었니(username);
+        return ResponseEntity.ok(Resp.ok(isSameUsername, isSameUsername ? "중복되었어요" : "중복되지않았어요"));
+    }
 
     @GetMapping("/logout")
     public String logout() {
