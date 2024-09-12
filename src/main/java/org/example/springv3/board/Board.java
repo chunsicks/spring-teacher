@@ -1,6 +1,8 @@
 package org.example.springv3.board;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,11 +34,13 @@ public class Board {
     private Timestamp createdAt;
 
     // fk
-
+    //@JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JsonIgnoreProperties({"board"})
+   // @JsonManagedReference
+    //@JsonIgnore
+    //@JsonIgnoreProperties({"board", "createdAt"})
     @OneToMany(mappedBy = "board")  //게시글 조회할 때 댓글여러개 필요해서 적어준 것이다,  포린키의 주인이 누군지 알려줘야 한다! 나는 아니야(안적으면 컬럼 생성한다)
     private List<Reply> replies;
 
@@ -47,5 +51,17 @@ public class Board {
         this.content = content;
         this.createdAt = createdAt;
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "Board{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", createdAt=" + createdAt +
+                ", user=" + user +
+                ", replies=" + replies +
+                '}';
     }
 }

@@ -37,4 +37,14 @@ public class Reply {
         this.comment = comment;
         this.createdAt = createdAt;
     }
+
+    @Override
+    public String toString() {
+        return "Reply{" +
+                "id=" + id +
+                ", user=" + user +
+                ", comment='" + comment + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

@@ -3,6 +3,8 @@ package org.example.springv3.board;
 import lombok.Data;
 import org.example.springv3.reply.Reply;
 import org.example.springv3.user.User;
+import org.springframework.data.domain.Page;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +73,44 @@ public class BoardResponse {
             this.id = board.getId();
             this.title = board.getTitle();
             this.content = board.getContent();
+        }
+    }
+    @Data
+    public static class PageDTO {
+        private Integer number; // 현재페이지
+        private Integer totalPage; // 전체페이지 개수
+        private Integer size; // 한페이지에 아이템 개수
+        private Boolean first;
+        private Boolean last;
+        private Integer prev; // 현재페이지 -1
+        private Integer next; // 현재페이지 +1
+        private List<Content> contents = new ArrayList<>();
+
+        public PageDTO(Page<Board> boardPage) {
+            this.number = boardPage.getNumber();
+            this.totalPage = boardPage.getTotalPages();
+            this.size = boardPage.getSize();
+            this.first = boardPage.isFirst();
+            this.last = boardPage.isLast();
+            this.prev = boardPage.getNumber()-1;
+            this.next = boardPage.getNumber()+1;
+            //for로 id title만 있으면 확인이 가능하다
+            //어디서 값을 가지고 와야 하지?
+            for(Board board : boardPage.getContent()) {
+                contents.add(new Content(board));
+            }
+        }
+        //생성자를 만들어서
+
+        @Data
+        class Content {
+            private Integer id;
+            private String title;
+
+            public Content(Board board) {
+                this.id = board.getId();
+                this.title = board.getTitle();
+            }
         }
     }
 }

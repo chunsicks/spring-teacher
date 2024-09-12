@@ -10,6 +10,7 @@ import org.example.springv3.core.error.ex.ExceptionApi404;
 import org.example.springv3.core.util.Resp;
 import org.example.springv3.user.User;
 import org.example.springv3.user.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,9 +31,21 @@ public class BoardController {
     //localhost:8080?title=제목 이러면?   requestParam 생략 가능
     // 이유는 적어주면 requestParam에서(defaultValue ="", name="title") 이렇게 쓸 수 있다 쿼리 안에 title이 없으면 터지는데 (파싱 못하니까) 그래서 공백으로 넣어라 할 수 있다.!
     @GetMapping("/")
-    public String list(@RequestParam(value = "title", required = false) String title, HttpServletRequest request) {
-        List<Board> boardList = boardService.게시글목록보기(title);
-        request.setAttribute("models", boardList);
+    public String list(@RequestParam(value = "title", required = false) String title,
+                       @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                       HttpServletRequest request) {
+        //쿼리스트링으로 page넣을 거임
+        // 디폴트 값 넣을 수 있다.
+        /*
+        if(page == null) {
+            page = 0;
+        }
+        이렇게 넘길 수 있다. /호출하면 넣어줄 수 있다.
+        defaultValue는 쿼리스트링으로 받는 거라서 숫자 0으로는 안됨 문자열 0으로 해야함 그래서 defaultValue하면 if 위에거 사용 안해도 됨
+         */
+        BoardResponse.PageDTO boardPG = boardService.게시글목록보기(title,page);
+        //가방에 담고 list에 있는 것만 꺼낼꺼니까 DTO안만들어도 됨
+        request.setAttribute("model", boardPG);
         return "board/list";
     }
 

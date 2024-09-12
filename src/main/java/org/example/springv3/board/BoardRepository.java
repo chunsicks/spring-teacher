@@ -4,6 +4,8 @@ import org.example.springv3.user.User;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,9 +23,13 @@ import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Integer> {
 
-    //9.10일 검색한다고 추가
+    //페이징jpql로
     @Query("select b from Board b where b.title like %:title% order by b.id desc")
-    List<Board> mFindAll(@Param("title") String title);
+    Page<Board> mFindAll(@Param("title") String title, Pageable pageable);
+
+    //9.10일 검색한다고 추가
+   // @Query("select b from Board b where b.title like %:title% order by b.id desc")
+   // List<Board> mFindAll(@Param("title") String title);
 
     // 내가 만든 메서드는 앞에 m을 붙인다 그냥 스스로 만든 약속
     // 이렇게 적으면 sort안 써도 됨
