@@ -85,6 +85,7 @@ public class BoardResponse {
         private Integer prev; // 현재페이지 -1
         private Integer next; // 현재페이지 +1
         private List<Content> contents = new ArrayList<>();
+        private List<Integer> numbers = new ArrayList<>();
 
         public PageDTO(Page<Board> boardPage) {
             this.number = boardPage.getNumber();
@@ -94,6 +95,12 @@ public class BoardResponse {
             this.last = boardPage.isLast();
             this.prev = boardPage.getNumber()-1;
             this.next = boardPage.getNumber()+1;
+            int temp = (number / 3)*3;  // 0-> 0, 3->3, 6->6
+
+            for(int i = temp; i<temp+2; i++){
+                this.numbers.add(i);
+            }
+
             //for로 id title만 있으면 확인이 가능하다
             //어디서 값을 가지고 와야 하지?
             for(Board board : boardPage.getContent()) {
