@@ -86,8 +86,11 @@ public class BoardResponse {
         private Integer next; // 현재페이지 +1
         private List<Content> contents = new ArrayList<>();
         private List<Integer> numbers = new ArrayList<>();
+        private String keyword;// DTO에는 null을 주지 않는다 공백은 줄지라도 그래서 공백줘야함
 
-        public PageDTO(Page<Board> boardPage) {
+
+        public PageDTO(Page<Board> boardPage, String title) {
+            this.keyword = title;
             this.number = boardPage.getNumber();
             this.totalPage = boardPage.getTotalPages();
             this.size = boardPage.getSize();
@@ -97,7 +100,7 @@ public class BoardResponse {
             this.next = boardPage.getNumber()+1;
             int temp = (number / 3)*3;  // 0-> 0, 3->3, 6->6
 
-            for(int i = temp; i<temp+2; i++){
+            for(int i = temp; i<temp+3; i++){
                 this.numbers.add(i);
             }
 
@@ -120,4 +123,17 @@ public class BoardResponse {
             }
         }
     }
+    @Data // getter, setter, toString
+    public static class ListDTO {
+        private Integer id;
+        private String title;
+        private Long count;
+
+        public ListDTO(Integer id, String title, Long count) {
+            this.id = id;
+            this.title = title;
+            this.count = count;
+        }
+    }
+
 }

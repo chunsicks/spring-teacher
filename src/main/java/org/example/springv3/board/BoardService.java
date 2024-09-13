@@ -34,11 +34,13 @@ public class BoardService {
             // 게시글 순서 거꾸로 만드려고
             Sort sort = Sort.by(Sort.Direction.DESC, "id");
             boardList = boardRepository.findAll(pageable);
+            //어자피 공백이니 null 들어가는 것을 ""로 바꾸면 된다
+            return new BoardResponse.PageDTO(boardList, "");
             // 검색된 결과
         } else {
             boardList = boardRepository.mFindAll(title, pageable);
+            return new BoardResponse.PageDTO(boardList, title);
         }
-        return new BoardResponse.PageDTO(boardList);
     }
 
 
